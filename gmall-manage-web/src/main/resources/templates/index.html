@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+
+    <!--使用easyUI 必须引入js，css-->
+    <script type="text/javascript" src="/easyui/jquery.min.js"></script>
+    <script type="text/javascript" src="/easyui/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="/easyui/easyloader.js"></script>
+    <link rel="stylesheet" type="text/css" href="/easyui/themes/icon.css">
+    <link rel="stylesheet" type="text/css" href="/easyui/themes/default/easyui.css">
+</head>
+<body class="easyui-layout">
+<div data-options="region:'north',title:'头',split:true" style="height:150px;"></div>
+<div data-options="region:'south',title:'底',split:true" style="height:100px;"></div>
+
+<div data-options="region:'west',title:'左',split:true" style="width:200px;">
+    <div id="aa" class="easyui-accordion" style="width:300px;height:200px;">
+        <div title="基本信息管理" data-options="">
+            <ul class="nav">
+                <li><a href="javascript:addTab('平台属性管理','attrListPage')"
+                       style="text-decoration:none;">平台属性管理</a></li>
+            </ul>
+        </div>
+        <div title="商品信息管理" data-options="" style="padding:10px;"></div>
+        <div title="广告管理"></div>
+    </div>
+</div>
+<div data-options="region:'center',title:'中'">
+    <div id="tt" class="easyui-tabs" style="width:100%;height:100%;"></div>
+</div>
+
+
+</body>
+<script type="text/javascript">
+    function addTab(title, url) {
+        if ($("#tt").tabs('exists', title)) {
+            $("#tt ").tabs('select', title);
+        } else {
+            $('#tt').tabs('add', {
+                title: title,
+                href: url,
+                closable: true
+            });
+        }
+
+    }
+
+</script>
+</html>
