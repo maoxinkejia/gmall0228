@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atguigu.gmall.manage.mapper.BaseAttrInfoMapper">
+
+    <!--autoMapping代表是否自动装配，true表示除主键的字段全部自动封装给实体类对应的属性-->
+    <resultMap id="getAttrInfoBy3IdMap" type="com.atguigu.gmall.bean.BaseAttrInfo" autoMapping="true">
+        <!--主键id-->
+        <id  property="id" column="id"></id>
+        <!--实体类中还有一个属性不在表格中，是自己创建的集合，需要使用collection来封装-->
+        <collection property="attrValueList" ofType="com.atguigu.gmall.bean.BaseAttrValue" autoMapping="true">
+            <!--因为使用了autoMapping自动装配，所以只需要写主键id即可-->
+            <result property="id" column="attr_value_id"></result>
+        </collection>
+    </resultMap>
+
+    <!-- List<BaseAttrInfo> getAttrInfoListByCatalog3Id(String catalog3Id);-->
+    <select id="getAttrInfoListByCatalog3Id" resultMap="getAttrInfoBy3IdMap">
+        SELECT
+            bai.`id`,
+            bai.`attr_name`,
+            bai.`catalog3_id`,
+            bav.`id` attr_value_id,
+            bav.`attr_id`,
+            bav.`value_name`
+        FROM base_attr_info bai
+        INNER JOIN base_attr_value bav
+        ON bai.`id`=bav.`attr_id`
+        WHERE catalog3_id=#{catalog3Id}
+    </select>
+
+
+</mapper>

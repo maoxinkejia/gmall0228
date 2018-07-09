@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper SYSTEM "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.atguigu.gmall.manage.mapper.SpuSaleAttrMapper">
+
+    <!--除主键外其余字段属性自动装配-->
+    <resultMap id="getSpuSaleAttrBySpuIdMap" type="com.atguigu.gmall.bean.SpuSaleAttr" autoMapping="true">
+        <!--声明主键-->
+        <id property="id" column="id"></id>
+        <!--表中没有的字段，属性是一个集合-->
+        <collection property="spuSaleAttrValueList" ofType="com.atguigu.gmall.bean.SpuSaleAttrValue" autoMapping="true">
+            <result property="id" column="sale_attr_value_id"></result>
+        </collection>
+    </resultMap>
+
+    <!--List<SpuSaleAttr> getSpuSaleAttrList(String spuId);-->
+    <select id="getSpuSaleAttrList" resultMap="getSpuSaleAttrBySpuIdMap">
+        SELECT
+            ssa.`id`,
+            ssa.`sale_attr_id`,
+            ssa.`sale_attr_name`,
+            ssa.`spu_id`,
+            ssav.`id` sale_attr_value_id,
+            ssav.`sale_attr_value_name`
+        FROM spu_sale_attr ssa
+        INNER JOIN spu_sale_attr_value ssav
+        ON ssa.`spu_id` = ssav.`spu_id`
+        AND ssa.`sale_attr_id`=ssav.`sale_attr_id`
+        WHERE ssav.`spu_id`=#{spuId}
+    </select>
+</mapper>

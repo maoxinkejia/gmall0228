@@ -9,7 +9,14 @@
     <script type="text/javascript" src="/easyui/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="/easyui/easyloader.js"></script>
     <link rel="stylesheet" type="text/css" href="/easyui/themes/icon.css">
-    <link rel="stylesheet" type="text/css" href="/easyui/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css"  href="/easyui/themes/default/easyui.css">
+
+    <!--引入图片上传工具webuploader-->
+    <link rel="stylesheet" type="text/css" href="/webuploader/webuploader.css">
+    <script type="text/javascript" src="/webuploader/webuploader.js"></script>
+    <script type="text/javascript" src="/easyui/datagrid-detailview.js"></script>
+
+
 </head>
 <body class="easyui-layout">
 <div data-options="region:'north',title:'头',split:true" style="height:150px;"></div>
@@ -17,13 +24,23 @@
 
 <div data-options="region:'west',title:'左',split:true" style="width:200px;">
     <div id="aa" class="easyui-accordion" style="width:300px;height:200px;">
+
         <div title="基本信息管理" data-options="">
             <ul class="nav">
-                <li><a href="javascript:addTab('平台属性管理','attrListPage')"
-                       style="text-decoration:none;">平台属性管理</a></li>
+                <li><a href="javascript:addTab('平台属性管理','attrListPage')" style="">平台属性管理</a></li>
             </ul>
         </div>
-        <div title="商品信息管理" data-options="" style="padding:10px;"></div>
+
+
+        <div title="商品信息管理" data-options="" style="padding:10px;">
+        <div title="商品信息管理">
+            <ul class="nav">
+                <li><a href="javascript:addTab('商品信息管理','spuListPage')" style="">商品SPU管理</a></li>
+            </ul>
+        </div>
+    </div>
+
+
         <div title="广告管理"></div>
     </div>
 </div>

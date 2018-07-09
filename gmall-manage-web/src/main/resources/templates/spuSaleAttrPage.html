@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>编辑销售属性列表</title>
+</head>
+<body>
+
+<!-----------------弹出框----------------------------->
+<div id="spuSaleAttr_dlg" class="easyui-dialog" title="编辑销售属性" style="width:500px;height:400px;"
+     closed="true" data-options="iconCls:'icon-save',resizable:true,modal:false" buttons="#spuSaleAttrBtns">
+    <br/><br/>
+    <!------------------从基本销售属性中选择------------->
+    销售属性： <select name="saleAttr" id="saleAttrSelect" class="easyui-combobox"
+                  data-options="valueField:'id',textField:'name',url:'baseSaleAttrList'" style="width:100px">
+</select>
+    <br/><br/>
+    <!----------------销售属性值列表---------------------------->
+    <table id="spuSaleAttrValueDg" class="easyui-datagrid" title="销售属性值列表"
+           data-options="singleSelect:true,method:'get',toolbar:'#spuSaleAttrValueTootbar'"></table>
+
+    <!----------------销售属性值列表工具栏----------------------->
+    <div id="spuSaleAttrValueTootbar" style="padding:5px;height:auto">
+        <div style="margin-bottom:5px">
+            <a href="#" id="spuSaleAttrValueAddBtn" class="easyui-linkbutton" iconCls="icon-add"
+               onclick="addSpuSaleAttrValue()" plain="true">添加</a>
+            <a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="removeSpuSaleAttrValue()">删除</a>
+        </div>
+    </div>
+
+
+    <div id="spuSaleAttrBtns">
+        <a href="#" class="easyui-linkbutton" onclick="saveSpuSaleAttr()">确 定</a>
+        <a href="#" class="easyui-linkbutton" onclick="javascript:$('#spuSaleAttr_dlg').dialog('close')">关 闭</a>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript">
+
+    //添加销售属性的函数方法
+    function addSpuSaleAttr() {
+        //初始化方法在spuSaleAttrPage页面
+        initSpuSaleAttrDlg();
+    }
+
+    function initSpuSaleAttrDlg(spuId, spuSaleAttr) {
+        //打开弹出框
+        $("#spuSaleAttr_dlg").dialog("open");
+
+        //初始化属性选择的下拉菜单
+        $('#saleAttrSelect').combobox('reset');
+        if (spuSaleAttr && spuSaleAttr.saleAttrId) {
+            $('#saleAttrSelect').combobox('select', spuSaleAttr.saleAttrId);
+        }
+
+        //初始化属性值表格
+        initSpuSaleAttrValueListDatagrid(spuId, spuSaleAttr);
+    }
+
+    //初始化属性值表格，被上面initSpuSaleAttrDlg方法调用
+    function initSpuSaleAttrValueListDatagrid(spuId, spuSaleAttr) {
+
+        //给表格一个空的url地址就是清空表格内的属性，加载表格数据，加载空数据，也是清空加载
+        var spuSaleAttrValueDg = $("#spuSaleAttrValueDg").datagrid({url: ""});
+        spuSaleAttrValueDg.datagrid('loadData', {total: 0, rows: []});
+
+        //给新打开的表格赋值，初始属性和信息
+        spuSaleAttrValueDg.datagrid({
+            columns: [[
+                {field: 'id', title: '销售属性值Id', width: '25%'},
+                {field: 'saleAttrId', title: '销售属性Id', hidden: true},
+                {
+                    field: 'saleAttrValueName', title: '销售属性值名称', width: '75%',
+                    editor: {
+                        type: 'validatebox', options: {required: true}  //必填项
+                    }
+                }
+            ]],
+            onDblClickRow: function (rowIndex, rowData) {
+                //双击开启编辑行
+                spuSaleAttrValueDg.datagrid("beginEdit", rowIndex);
+                //设定当失去焦点时,退出编辑状态
+                var saleAttrValueName = rowData.saleAttrValueName;
+                $("input.datagrid-editable-input").val(saleAttrValueName).bind("blur", function (evt) {
+                    spuSaleAttrValueDg.datagrid('endEdit', rowIndex);
+                });
+            }
+        });
+
+        //加载数据  //如果有缓存数据加载缓存数据  如果没有通过前页的spuid和saleAttrid从数据库中查询
+        /*console.log("spuSaleAttr:" + JSON.stringify(spuSaleAttr.saleAttrValue));*/
+        if (spuSaleAttr && spuSaleAttr.spuSaleAttrValueJson && spuSaleAttr.spuSaleAttrValueJson != '') {
+            console.log("加载暂存");
+            spuSaleAttrValueDg.datagrid("loadData", spuSaleAttr.spuSaleAttrValueJson);
+        }
+    }
+
+    //添加一行空的属性值
+    function addSpuSaleAttrValue() {
+        $('#spuSaleAttrValueDg').datagrid("appendRow", {id: '', name: ''});
+    }
+
+    //删除被选中的属性值行
+    function removeSpuSaleAttrValue() {
+        var datagrid = $('#spuSaleAttrValueDg');
+        var row = datagrid.datagrid('getSelected');
+        if (row) {
+            var rowIndex = datagrid.datagrid('getRowIndex', row);
+            datagrid.datagrid('deleteRow', rowIndex);
+        }
+    }
+
+
+    //添加属性值的dialog中的确定按钮，将要保存的数据暂时存成一个json字符串在spudlg中
+    function saveSpuSaleAttr() {   //把表单的内容存入属性表格中，如果有相同的属性，则替换掉原来的
+        //获取销售属性值的数据，封装成一个对象
+        var spuSaleAttrValueJson = $('#spuSaleAttrValueDg').datagrid('getData');
+        //获取id
+        var saleAttrId = $('#saleAttrSelect').combobox("getValue");
+        //值
+        var saleAttrName = $('#saleAttrSelect').combobox("getText");
+
+        //
+        var rowIndex = $("#spuSaleAttrDg").datagrid("getRowIndex", saleAttrId);
+        console.log("delete rowIndex:" + rowIndex);
+        if (rowIndex >= 0) {
+            $("#spuSaleAttrDg").datagrid("deleteRow", rowIndex);
+        }
+
+        //将获取到的销售属性值列表的信息追加到销售属性列表中
+        $("#spuSaleAttrDg").datagrid("appendRow", {
+            saleAttrId: saleAttrId,
+            saleAttrName: saleAttrName,
+            spuSaleAttrValueJson: spuSaleAttrValueJson
+        });
+
+        $("#spuSaleAttr_dlg").dialog("close");
+
+    }
+
+
+</script>
+</html>

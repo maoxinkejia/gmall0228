@@ -51,15 +51,15 @@
 <div id="dlg" class="easyui-dialog" title="编辑属性" style="width:600px;height:500px;"
      closed="true" data-options="iconCls:'icon-save',resizable:true,modal:true" buttons="#bb">
     <form id="attrForm">
-        <br/>
-        <label>属性名称:</label>
-        <input id="attrName" name="attrName" class="easyui-textbox" data-options="" style="width:100px"/>
-        <!--隐藏id值-->
-        <input id="attrId" name="attrId" type="hidden"/>
-        <br/><br/>
-        <!--属性的数据表格-->
-        <table id="dg_av" class="easyui-datagrid" title="属性值列表"></table>
-    </form>
+    <br/>
+    <label>属性名称:</label>
+    <input id="attrName" name="attrName" class="easyui-textbox" data-options="" style="width:100px"/>
+    <!--隐藏id值-->
+    <input id="attrId" name="attrId" type="hidden"/>
+    <br/><br/>
+    <!--属性的数据表格-->
+    <table id="dg_av" class="easyui-datagrid" title="属性值列表"></table>
+</form>
 </div>
 
 <div id="bb">
@@ -68,6 +68,26 @@
 </div>
 </body>
 <script type="text/javascript">
+
+    //修改属性信息和属性值
+    function editAttrInfo() {
+        //判断是否选择了三级分类
+        if(!checkBeforeDialog()){
+            return ;
+        }
+        //如果已经选择了三级分类则弹出对话框
+        $("#dlg").dialog("open");
+        //执行初始化,加载相对应的表格和工具按钮等
+        initAttrValueDatagrid();
+        //获取被选择的要修改的行
+        var attrInfoRow=$("#dg").datagrid('getSelected');
+        //加载内表数据前先发送一个请求链接，根据三级分类id查询相对应的属性和属性值
+        $('#dg_av').datagrid({url:'getAttrValueList?attrId='+attrInfoRow.id});
+        //在内表中回显被选中行属性的属性信息和属性值数据
+        $("#attrId").val(attrInfoRow.id);
+        $("#attrName").textbox('setValue',attrInfoRow.attrName);
+
+    }
 
     //保存属性对应的属性值信息
     function saveAttr() {
