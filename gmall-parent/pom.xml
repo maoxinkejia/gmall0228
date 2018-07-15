@@ -15,6 +15,9 @@
         <module>../gmall-web-util</module>
     </modules>
     <packaging>pom</packaging>
+    <!--定义jar的版本-->
+
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -29,7 +32,6 @@
         <xml-apis.version>1.4.01</xml-apis.version>
         <batik-ext.version>1.9.1</batik-ext.version>
         <jsoup.version>1.11.2</jsoup.version>
-
         <httpclient.version>4.5.5</httpclient.version>
         <commons-lang3.version>3.7</commons-lang3.version>
         <mapper-starter.version>1.2.3</mapper-starter.version>
@@ -37,8 +39,6 @@
         <jest.version>5.3.3</jest.version>
         <jna.version>4.5.1</jna.version>
         <beanUtils.version>1.9.3</beanUtils.version>
-
-
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -152,8 +152,9 @@
             </dependency>
 
 
-
         </dependencies>
     </dependencyManagement>
+
+
 
 </project>

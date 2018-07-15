@@ -12,8 +12,20 @@ public class BaseAttrValue implements Serializable {
     private String valueName;
     @Column
     private String attrId;
+
+    @Transient
+    private String urlParam;
+
     @Transient
     private String isEnabled;
+
+    public String getUrlParam() {
+        return urlParam;
+    }
+
+    public void setUrlParam(String urlParam) {
+        this.urlParam = urlParam;
+    }
 
     public String getId() {
         return id;

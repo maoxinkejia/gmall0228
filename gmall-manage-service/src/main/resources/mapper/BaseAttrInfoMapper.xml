@@ -3,7 +3,7 @@
 <mapper namespace="com.atguigu.gmall.manage.mapper.BaseAttrInfoMapper">
 
     <!--autoMapping代表是否自动装配，true表示除主键的字段全部自动封装给实体类对应的属性-->
-    <resultMap id="getAttrInfoBy3IdMap" type="com.atguigu.gmall.bean.BaseAttrInfo" autoMapping="true">
+    <resultMap id="BaseAttrInfoMap" type="com.atguigu.gmall.bean.BaseAttrInfo" autoMapping="true">
         <!--主键id-->
         <id  property="id" column="id"></id>
         <!--实体类中还有一个属性不在表格中，是自己创建的集合，需要使用collection来封装-->
@@ -14,7 +14,7 @@
     </resultMap>
 
     <!-- List<BaseAttrInfo> getAttrInfoListByCatalog3Id(String catalog3Id);-->
-    <select id="getAttrInfoListByCatalog3Id" resultMap="getAttrInfoBy3IdMap">
+    <select id="getAttrInfoListByCatalog3Id" resultMap="BaseAttrInfoMap">
         SELECT
             bai.`id`,
             bai.`attr_name`,
@@ -28,5 +28,23 @@
         WHERE catalog3_id=#{catalog3Id}
     </select>
 
+
+    <!--List<BaseAttrInfo> selectByAttrValueIdList(@Param("list") List<String> attrValueIdList);-->
+    <select id="selectByAttrValueIdList" resultMap="BaseAttrInfoMap">
+        SELECT
+            ai.id,
+            ai.attr_name,
+            ai.catalog3_id,
+            av.id attr_value_id ,
+            av.attr_id ,
+            av.value_name
+        FROM base_attr_info ai
+        INNER JOIN base_attr_value av
+        ON ai.id=av.attr_id
+        WHERE av.id IN
+        <foreach collection="list" separator="," open="(" close=")" item="id">
+            #{id}
+        </foreach>
+    </select>
 
 </mapper>

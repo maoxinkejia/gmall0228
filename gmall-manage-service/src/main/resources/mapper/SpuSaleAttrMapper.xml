@@ -27,4 +27,27 @@
         AND ssa.`sale_attr_id`=ssav.`sale_attr_id`
         WHERE ssav.`spu_id`=#{spuId}
     </select>
+
+    <!--List<SpuSaleAttr> selectSpuSaleAttrListCheckBySku(String id, String spuId);-->
+    <select id="selectSpuSaleAttrListCheckBySku" resultMap="getSpuSaleAttrBySpuIdMap">
+        SELECT
+          sa.`id`,
+          sa.`sale_attr_id`,
+          sa.`sale_attr_name`,
+          sa.`spu_id`,
+          sv.`id` sale_attr_value_id,
+          sv.`sale_attr_value_name`,
+          ssav.`sku_id`,
+        IF (sku_id IS NOT NULL,1,0) is_checked
+        FROM spu_sale_attr sa
+        INNER JOIN spu_sale_attr_value sv
+        ON sa.`spu_id` = sv.`spu_id`
+        AND sa.`sale_attr_id`=sv.`sale_attr_id`
+        LEFT JOIN sku_sale_attr_value ssav
+        ON sa.`sale_attr_id`=ssav.`sale_attr_id`
+        AND sv.`id`=ssav.`sale_attr_value_id`
+        AND ssav.`sku_id`=#{arg0}
+        WHERE sv.`spu_id`=#{arg1}
+        ORDER BY sa.`sale_attr_id`;
+    </select>
 </mapper>

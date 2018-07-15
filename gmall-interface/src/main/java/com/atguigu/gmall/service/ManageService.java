@@ -44,4 +44,16 @@ public interface ManageService {
 
     //保存skuInfo
     void saveSku(SkuInfo skuInfo);
+
+    //根据skuId查询skuInfo对象(包含对象中的图片属性)
+    SkuInfo getSkuInfoById(String skuId);
+
+    //根据skuInfo（skuId和spuId）查询spu销售属性集合，在页面显示
+    List<SpuSaleAttr> selectSpuSaleAttrListCheckBySku(SkuInfo skuInfo);
+
+    //根据spuId查询sku销售属性集合
+    List<SkuSaleAttrValue> getSkuSaleAttrValueListBySpu(String spuId);
+
+    //重载方法，根据属性值id集合查询属性信息对象集合
+    List<BaseAttrInfo> getAttrInfo(List<String> attrValueIdList);
 }
