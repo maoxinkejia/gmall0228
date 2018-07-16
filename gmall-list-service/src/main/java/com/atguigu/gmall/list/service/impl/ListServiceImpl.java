@@ -4,11 +4,13 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.atguigu.gmall.bean.SkuLsInfo;
 import com.atguigu.gmall.bean.SkuLsParams;
 import com.atguigu.gmall.bean.SkuLsResult;
+import com.atguigu.gmall.config.RedisUtil;
 import com.atguigu.gmall.service.ListService;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Index;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
+import io.searchbox.core.Update;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -21,6 +23,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import redis.clients.jedis.Jedis;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,6 +34,8 @@ public class ListServiceImpl implements ListService {
 
     @Autowired
     private JestClient jestClient;
+    @Autowired
+    private RedisUtil redisUtil;
 
     //常量：es中的哪个库
     public static final String ES_INDEX = "gmall";
@@ -72,6 +77,39 @@ public class ListServiceImpl implements ListService {
 
         //将结果返回
         return skuLsResult;
+    }
+
+    @Override
+    public void incrHotScore(String skuId) {
+        // 获取redis对象
+        Jedis jedis = redisUtil.getJedisPool();
+        // key 由skuId 组成,value:每点击一次应该在原有数据累加！ redis 。累加的方法
+        Double hotScore = jedis.zincrby("hotScore", 1, "skuId:" + skuId);
+        // 什么情况下更新es。(每当评分被刷新十次，是十的倍数时就更新es，降低io操作)
+        if (hotScore%10==0){
+            // 根据商品id更新es的hotScore
+            updateHotScore(skuId,Math.round(hotScore));
+        }
+    }
+
+    //根据商品id更新
+    private void updateHotScore(String skuId, long hotScore) {
+        // 准备更新语句
+        String updDsl="{\n" +
+                "   \"doc\":{\n" +
+                "     \"hotScore\":"+hotScore+"\n" +
+                "   }\n" +
+                "}";
+        ;
+        //新增，es Index, 查询 es Search 更新es Update
+        Update update = new Update.Builder(updDsl).index(ES_INDEX).type(ES_TYPE).id(skuId).build();
+
+        // 执行！
+        try {
+            jestClient.execute(update);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private SkuLsResult makeResultForSearch(SkuLsParams skuLsParams, SearchResult searchResult) {

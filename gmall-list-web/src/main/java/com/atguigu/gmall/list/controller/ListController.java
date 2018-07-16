@@ -76,9 +76,9 @@ public class ListController {
                                 //给被选中的属性值附一个新的名字
                                 baseAttrValueSelected.setValueName(baseAttrInfo.getAttrName() + ":" + baseAttrValue.getValueName());
                                 //重新调用制作url的方法，将被选中的valueId传进去，进行去重操作
-                                String newMakeUrl = makeUrlParam(skuLsParams, valueId);
+                                String urlParam = makeUrlParam(skuLsParams, valueId);
                                 //将新的url地址放到被选中的属性值对象中
-                                baseAttrValueSelected.setUrlParam(newMakeUrl);
+                                baseAttrValueSelected.setUrlParam(urlParam);
                                 //创建一个集合，用来添加被选中的属性值的对象
                                 baseAttrValueList.add(baseAttrValueSelected);
                             }
@@ -136,7 +136,7 @@ public class ListController {
                 //将传进来的可变参数的值与valueId进行比较，如果一样则不拼接
                 if (paramIds != null && paramIds.length > 0) {
                     //获取每一个可变参数的id值
-                    String paramId = paramIds[i];
+                    String paramId = paramIds[0];
                     //进行比较
                     if (paramId.equals(valueId)) {
                         //如果一样则不进行拼接（后面的代码不走，结束本次循环，开始下一次循环）

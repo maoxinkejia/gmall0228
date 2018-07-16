@@ -11,4 +11,7 @@ public interface ListService {
 
     //根据参数查询，获得查询结果
     public SkuLsResult search(SkuLsParams skuLsParams);
+
+    //自增分数，商品每被查看一次，就调用一次这个方法，刷评分
+    void incrHotScore(String skuId);
 }

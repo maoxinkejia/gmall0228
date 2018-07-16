@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSON;
 import com.atguigu.gmall.bean.SkuInfo;
 import com.atguigu.gmall.bean.SkuSaleAttrValue;
 import com.atguigu.gmall.bean.SpuSaleAttr;
+import com.atguigu.gmall.config.LoginRequire;
+import com.atguigu.gmall.service.ListService;
 import com.atguigu.gmall.service.ManageService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,9 +22,14 @@ public class ItemController {
 
     @Reference
     private ManageService manageService;
+    @Reference
+    private ListService listService;
 
     @RequestMapping("/{skuId}.html")
+    //自定义的注解类，true表示访问该控制器时需要走这个注解（需要通过过滤器）（需要登录才能访问该控制器）
+    @LoginRequire(autoRedirect = true)
     public String skuInfoPage(@PathVariable("skuId") String skuId, Model model) {
+
         //根据skuId查询对应的商品信息
         SkuInfo skuInfo = manageService.getSkuInfoById(skuId);
         //将查询到的商品信息放到域中
@@ -66,6 +73,8 @@ public class ItemController {
         //把字符串放到页面中
         model.addAttribute("skuValueJson", skuValueJson);
 
+        //调用服务，使这个商品每被访问一次就自增分数一次
+        listService.incrHotScore(skuId);
         return "item";
     }
 }
