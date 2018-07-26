@@ -127,7 +127,8 @@ public class PaymentServiceImpl implements PaymentService {
 
     // 调用，在付款的时候【生成二维码】
     @Override
-    public void sendDelayPaymentResult(String outTradeNo, int delaySec, int checkCount) {
+    public void
+    sendDelayPaymentResult(String outTradeNo, int delaySec, int checkCount) {
         // 创建连接
         Connection connection = activeMQUtil.getConnection();
         try {

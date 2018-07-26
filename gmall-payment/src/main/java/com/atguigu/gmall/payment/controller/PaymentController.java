@@ -96,6 +96,8 @@ public class PaymentController {
         }
         response.setContentType("text/html;charset=UTF-8");
 
+        // 调用的地方
+        paymentService.sendDelayPaymentResult(orderInfo.getOutTradeNo(),15, 3);
         return form;
     }
 
